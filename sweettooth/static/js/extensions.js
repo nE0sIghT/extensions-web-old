@@ -37,6 +37,8 @@ function($, messages, dbusProxy, extensionUtils, templates) {
         messages.addError(templates.get('messages/dummy_proxy')());
 
         $.fn.addExtensionSwitch = function() {
+            enableSoftwareLink($(this), $(this).data('uuid'));
+
             // Don't show our switches -- CSS styles define a clickable
             // area even with no content.
             return this.find('.switch').hide();
@@ -195,6 +197,17 @@ function($, messages, dbusProxy, extensionUtils, templates) {
         elems[uuid] = $elem;
     }
 
+    function enableSoftwareLink(extension, uuid)
+    {
+		extension
+			.find('.gnome-software-button')
+			.prop('title', 'Open in GNOME Software')
+			.on('click', event => {
+				event.preventDefault();
+				window.open('web+gnomeshellextension://' + encodeURIComponent(uuid), '_self');
+			});
+    }
+
     $.fn.addLocalExtensions = function () {
         return this.each(function() {
             var $container = $(this);
@@ -282,6 +295,8 @@ function($, messages, dbusProxy, extensionUtils, templates) {
         return this.each(function() {
             var $extension = $(this);
             var uuid = $extension.data('uuid');
+
+            enableSoftwareLink($extension, uuid);
 
             $extension.on('out-of-date', function() {
                 var svm = $extension.data('svm');
